@@ -29,18 +29,23 @@ export function useActivateConnector({
 
   const tryActivation = useCallback(
     async (connector: Connector) => {
+      console.log('tryActivation');
       const connection = getWeb3ReactConnection(connector)
       const connectionType = connection.type
       const isHardWareWallet = getIsHardWareWallet(connectionType)
+      console.log('tryActivation', connectionType);
 
       // Skips wallet connection if the connection should override the default
       // behavior, i.e. install MetaMask or launch Coinbase app
       if (connection.overrideActivate?.(chainId)) return
 
       try {
+        console.log('tryActivation', connectionType, 'setPendingConnector');
         setPendingConnector(connector)
+        console.log('tryActivation', connectionType, 'beforeActivation');
         beforeActivation()
 
+        console.log('tryActivation', connectionType, 'activate');
         await connector.activate(skipNetworkChanging ? undefined : getCurrentChainIdFromUrl())
 
         afterActivation(isHardWareWallet, connectionType)
